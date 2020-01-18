@@ -15,34 +15,68 @@ connection.connect(function(err) {
   displaymenu();
 });
 
-function addemployee() {
-  var query = connection.query(
-    "insert into employee set ?",
-    {
-      first_name: "John",
-      last_name: "Gazz",
-      role_id: 1,
-      manager_id: 1
-    },
-    function(error, response) {
-      if (error) throw error;
+ function addemployee() {
+ inquirer
+    .prompt([
+      {
+        name: "firstname",
+        type: "text",
+        message: "enterfirstname"
+      },
+      {
+        name: "lastname",
+        type: "text",
+        message: "enterlastname"
+      },
+      {
+        name: "roleid",
+        type: "list",
+        message: "enterroleid",
+        list: [1,2,3,4,5,6,7,8,9,10]
+      },{
+      name: "managerid",
+      type: "list",
+      message: "managerid",
+      list: [6,8,12,14,17,19,21]
     }
-  );
+    ])
+    .then(function (userinput){
+      return 
+      connection.query(
+        "insert into employee set ?",
+        {
+          first_name: userinput.firstname,
+          last_name: userinput.lastname,
+          role_id: userinput.roleid,
+          manager_id: userinput.managerid
+        })
+      //   function(error, response) {
+      //     if (error) throw error;
+      //   }
+      // );
+    })
+    .then(function (response){
+      console.log(response)
+      displaymenu()
+    })
+    .catch(function (error){
+      console.log("error", error)
+      displaymenu()
+    })
+  
 }
 
-function viewemployees() {
+ function viewemployees() {
   var query = connection.query(
     "select * from employee ",
-    {
-      first_name: "John",
-      last_name: "Gazz",
-      role_id: 1,
-      manager_id: 1
-    },
+    
     function(error, response) {
       if (error) throw error;
+      console.log(response);
+      displaymenu()
     }
   );
+
 }
 
 function updateemployee() {
@@ -83,18 +117,22 @@ function displaymenu() {
         name: "choices",
         type: "list",
         message: "enter choice",
-        choices: ["new employee", "update employee", "displayemployees"]
+        choices: ["new employee", "update employee", "displayemployees", "exit"]
       }
     ])
     .then(function(response) {
       console.log("response is: ", response);
       switch(response.choices){
-
+        case "exit":
+          process.exit(0)
           case "new employee":
           addemployee();
           case "update employee":
           updateemployee();
           case "displayemployees":
-          viewemployees();}
+          viewemployees();
+       
+        }
+          
     });
 }
