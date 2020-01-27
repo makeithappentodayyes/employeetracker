@@ -11,3 +11,4 @@ last_name varchar (30),
 role_id int, constraint fk3 foreign key(role_id) references role(id), 
 manager_id int, constraint fk2 foreign key(manager_id) references employee(id));
 
+SELECT * from employee 
